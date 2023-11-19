@@ -1,3 +1,4 @@
+import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'ApiService.dart';
 import 'Etudiant.dart';
@@ -129,24 +130,24 @@ class _MyHomePageState extends State<MyHomePage> {
   }
 
   Future<void> _updateEtudiant(Etudiant etudiant) async {
-    etudiant.nom = nomController.text;
-    etudiant.prenom = prenomController.text;
-    etudiant.civilite = civiliteController.text;
-
     try {
+      etudiant.nom = nomController.text;
+      etudiant.prenom = prenomController.text;
+      etudiant.civilite = civiliteController.text;
+
       await widget.apiService.updateEtudiant(etudiant);
-      // Refresh the list after update
+
       setState(() {});
       print('Student updated successfully');
     } catch (e) {
-      print('Failed to update student: $e');
+      print('Error updating student: $e');
     }
   }
 
   Future<void> _deleteEtudiant(String id) async {
+    print('Deleting student with ID: $id');
     try {
       await widget.apiService.deleteEtudiant(id);
-      // Refresh the list after deletion
       setState(() {});
       print('Student deleted successfully');
     } catch (e) {
@@ -159,7 +160,6 @@ class _MyHomePageState extends State<MyHomePage> {
       context,
       MaterialPageRoute(builder: (context) => AddEtudiantPage()),
     ).then((value) {
-      // Reload the list after returning from the add page
       setState(() {});
     });
   }

@@ -52,14 +52,15 @@ class _AddEtudiantPageState extends State<AddEtudiantPage> {
 
   Future<void> _saveEtudiant() async {
     try {
-      // Create a new Etudiant object with the entered details
       final newEtudiant = Etudiant(
         nom: nomController.text,
         prenom: prenomController.text,
-        civilite: civiliteController.text, id: '', specialite: [], langues: [],
+        civilite: civiliteController.text,
+        id: '', // You may need to generate a unique ID
+        specialite: [], // Initialize with empty lists
+        langues: [], // Initialize with empty lists
       );
 
-      // Call the API service to add the new element
       await apiService.addEtudiant(newEtudiant);
 
       print('Student added successfully');

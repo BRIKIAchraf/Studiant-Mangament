@@ -1,7 +1,5 @@
-import 'dart:convert';
 import 'package:http/http.dart' as http;
-import 'package:http/http.dart';
-
+import 'dart:convert';
 import 'Etudiant.dart';
 
 class ApiService {
@@ -20,30 +18,58 @@ class ApiService {
   }
 
   Future<void> deleteEtudiant(String id) async {
-    final apiUrl = '$baseUrl/Etudiant/$id';
-    final response = await http.delete(Uri.parse(apiUrl));
+    if (id == null || id.isEmpty) {
+      print('Invalid student ID: $id');
+      return;
+    }
 
-    if (response.statusCode != 200) {
-      throw Exception('Failed to delete student');
+    final apiUrl = '$baseUrl/Etudiant/$id';
+
+    try {
+      final response = await http.delete(Uri.parse(apiUrl));
+
+      if (response.statusCode == 200) {
+        print('Student deleted successfully');
+      } else {
+        print('Failed to delete student. Status code: ${response.statusCode}');
+        print('Response body: ${response.body}');
+      }
+    } catch (e) {
+      print('Error deleting student: $e');
     }
   }
 
   Future<void> updateEtudiant(Etudiant etudiant) async {
     final apiUrl = '$baseUrl/Etudiant/${etudiant.id}';
-    final response = await http.put(
-      Uri.parse(apiUrl),
-      headers: {'Content-Type': 'application/json'},
-      body: json.encode(etudiant.toJson()),
-    );
+    try {
+      final Map<String, dynamic> etudiantMap = {
+        'Nom': etudiant.nom,
+        'Prenom': etudiant.prenom,
+        'Civilite': etudiant.civilite,
+        'Specialite': etudiant.specialite,
+        'Langues': etudiant.langues,
+      };
 
-    if (response.statusCode != 200) {
+      final response = await http.put(
+        Uri.parse(apiUrl),
+        headers: {'Content-Type': 'application/json'},
+        body: json.encode(etudiantMap),
+      );
+
+      if (response.statusCode != 200) {
+        print('Failed to update student. Status code: ${response.statusCode}');
+        print('Response body: ${response.body}');
+        throw Exception('Failed to update student');
+      }
+    } catch (e) {
+      print('Error updating student: $e');
       throw Exception('Failed to update student');
     }
   }
 
   Future<void> addEtudiant(Etudiant etudiant) async {
     try {
-      final String apiUrl = '$baseUrl/Etudiant'; // Use the correct endpoint
+      final String apiUrl = '$baseUrl/Etudiant';
 
       final Map<String, dynamic> etudiantMap = {
         'Nom': etudiant.nom,
@@ -53,7 +79,7 @@ class ApiService {
         'Langues': etudiant.langues,
       };
 
-      final Response response = await http.post(
+      final response = await http.post(
         Uri.parse(apiUrl),
         headers: {'Content-Type': 'application/json'},
         body: json.encode(etudiantMap),
@@ -63,6 +89,7 @@ class ApiService {
         print('Student added successfully: ${response.body}');
       } else {
         print('Failed to add student. Status code: ${response.statusCode}');
+        print('Response body: ${response.body}');
       }
     } catch (e) {
       print('Error adding student: $e');
